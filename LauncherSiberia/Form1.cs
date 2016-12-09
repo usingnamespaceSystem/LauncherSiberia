@@ -24,7 +24,7 @@ namespace LauncherSiberia
         string path_to = String.Empty;
         WebClient client_new = new WebClient();
         SynchronizationContext context;
-        String c = String.Empty;
+        String c = Application.StartupPath;
         String re = String.Empty;
         public Form1()
         {
@@ -53,7 +53,6 @@ namespace LauncherSiberia
             if (System.IO.File.Exists(Properties.Settings.Default.path_siberia + "\\" + "Client.exe") == false && System.IO.File.Exists(Application.StartupPath+"\\"+"Client.exe") == false)
             {
                 button1.Image = Properties.Resources.skachat as Bitmap;
-                
             }
 
             if (System.IO.File.Exists(Properties.Settings.Default.path_siberia + "\\" + "Client.exe") == true || System.IO.File.Exists(Application.StartupPath + "\\" + "Client.exe") == true)
@@ -140,9 +139,9 @@ namespace LauncherSiberia
                     {
                         button1.Image = Properties.Resources.obnov as Bitmap;
                     }
+                    timer1.Start();
                     WebClient client = new WebClient();
-                    client.DownloadProgressChanged +=
-                        new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
+                    client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
                     client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
                     client.DownloadFileAsync(new Uri("http://rom-siberia.ru/download/data.rar"), c + "\\" + "data.exe");
                     Thread.Sleep(500);
@@ -155,9 +154,7 @@ namespace LauncherSiberia
                     Thread.Sleep(300);
                     label2.Text = localVersion1;
                 }
-
-            }
-            
+            } 
         }
         
         void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -171,8 +168,9 @@ namespace LauncherSiberia
 
         void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            Process.Start(c + "\\" + "data.exe", "/s -d -o+" + Properties.Settings.Default.path_siberia);
-            Thread.Sleep(300);
+            if (Properties.Settings.Default.path_siberia == "")                        
+                Properties.Settings.Default.path_siberia = Application.StartupPath;
+            Process.Start(c + "\\" + "data.exe", "/s -o+" + Properties.Settings.Default.path_siberia);
             button1.Image = Properties.Resources.igra as Bitmap;
             button1.Enabled = true;
             fsProgressBar2.Hide();
